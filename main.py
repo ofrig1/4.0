@@ -12,6 +12,7 @@ import logging
 # Constants
 DEFAULT_URL = "/index.html"
 ROOT_WEB = "C:\\work\\cyber\\webroot"
+ERROR_PHOTO = "C:\\work\\cyber\\webroot\\404.jpeg"
 
 INVALID_REQUEST_ERROR = 400
 FILE_NOT_FOUND_ERROR = 404
@@ -98,8 +99,8 @@ def handle_error(client_socket, status_code, status_text):
     """
     if status_code == FILE_NOT_FOUND_ERROR:
         # Custom Not Found Page with Image
-        error_page_path = "C:\\work\\cyber\\webroot\\404.jpeg"
-        image_path = "C:\\work\\cyber\\webroot\\404.jpeg"
+        error_page_path = ERROR_PHOTO
+        image_path = ERROR_PHOTO
         if os.path.exists(error_page_path):
             with open(error_page_path, 'rb') as error_page_file:
                 error_page_data = error_page_file.read()
@@ -119,7 +120,10 @@ def handle_error(client_socket, status_code, status_text):
         client_socket.send(error_response)
     else:
         error_message = f"{status_code} {status_text}"
-        error_header = f"{HTTP_INTERNAL_SERVER_ERR}Content-Type: text/plain\r\nContent-Length: {len(error_message)}\r\n\r\n"
+        error_header = (
+            f"{HTTP_INTERNAL_SERVER_ERR}Content-Type: text/plain\r\n"
+            f"Content-Length: {len(error_message)}\r\n\r\n"
+        )
         error_response = error_header.encode() + error_message.encode()
         client_socket.send(error_response)
 
@@ -253,5 +257,19 @@ def main():
 
 
 if __name__ == "__main__":
-    # Call the main handler function
+    assert INVALID_REQUEST_ERROR == 400
+    assert FILE_NOT_FOUND_ERROR == 404
+    assert FORBIDDEN_ERROR == 403
+    assert INTERNAL_SERVER_ERROR == 500
+    assert validate_http_request('GET /index.html HTTP/1.1\r\n') == (True, '/index.html')
+    assert validate_http_request('POST /index.html HTTP/1.1\r\n') == (False, '')
+    assert get_content_type('html') == 'text/html;charset=utf-8'
+    assert get_content_type('jpg') == 'image/jpeg'
+    assert get_content_type('css') == 'text/css'
+    assert get_content_type('js') == 'text/javascript; charset=UTF-8'
+    assert get_content_type('txt') == 'text/plain'
+    assert get_content_type('ico') == 'image/x-icon'
+    assert get_content_type('gif') == 'image/jpeg'  # Assuming image type should be 'image/jpeg'
+    assert get_content_type('png') == 'image/png'
+    assert get_content_type('unknown') == 'application/octet-stream'
     main()
