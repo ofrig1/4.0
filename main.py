@@ -46,8 +46,13 @@ def protocol_receive(my_socket):
     :param my_socket: The socket for communication
     :return: message sent from client
     """
+    message = ''
     try:
-        return my_socket.recv(BUFFER_SIZE).decode()
+        while not message.endswith('\r\n\r\n'):
+            message += my_socket.recv(1).decode()
+        return message
+        # length =
+        # return my_socket.recv(BUFFER_SIZE).decode()
     except socket.error as e:
         logging.error(f"Socket error: {e}")
         return ''
