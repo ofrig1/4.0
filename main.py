@@ -12,7 +12,8 @@ import logging
 # Constants
 DEFAULT_URL = "/index.html"
 ROOT_WEB = "C:\\work\\cyber\\webroot"
-ERROR_PHOTO = "C:\\work\\cyber\\webroot\\404.jpeg"
+ERROR_IMAGE_NAME = "404.jpg"
+ERROR_PATH = r"special_images/" + ERROR_IMAGE_NAME
 
 INVALID_REQUEST_ERROR = 400
 FILE_NOT_FOUND_ERROR = 404
@@ -99,8 +100,8 @@ def handle_error(client_socket, status_code, status_text):
     """
     if status_code == FILE_NOT_FOUND_ERROR:
         # Custom Not Found Page with Image
-        error_page_path = ERROR_PHOTO
-        image_path = ERROR_PHOTO
+        error_page_path = ERROR_PATH
+        image_path = ERROR_PATH
         if os.path.exists(error_page_path):
             with open(error_page_path, 'rb') as error_page_file:
                 error_page_data = error_page_file.read()
